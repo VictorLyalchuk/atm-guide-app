@@ -1,7 +1,9 @@
 import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text, View, Platform, SafeAreaView } from 'react-native';
 import { useEffect, useState } from 'react';
 import { getToken, refreshToken } from "./src/services/account-services";
+
+import HomeScreen from './src/screens/HomeScreen/HomeScreen';
 
 export default function App() {
   const [ msg, setMsg ] = useState("");
@@ -28,10 +30,9 @@ export default function App() {
   }, []);
 
   return (
-    <View style={styles.container}>
-      <Text>{msg}</Text>
-      <StatusBar style="auto" />
-    </View>
+    <SafeAreaView style={styles.container}>
+      <HomeScreen />
+    </SafeAreaView>
   );
 }
 
@@ -39,7 +40,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
+    marginTop: Platform.OS === 'android' ? 25 : 0
   },
 });
