@@ -1,5 +1,4 @@
-import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View, Platform, SafeAreaView } from 'react-native';
+import { StyleSheet, Text, StatusBar , Platform, SafeAreaView } from 'react-native';
 import { useEffect, useState } from 'react';
 import { getToken, refreshToken } from "./src/services/account-services";
 
@@ -40,6 +39,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#fff',
-    marginTop: Platform.OS === 'android' ? 25 : 0
+    marginTop: Platform.OS === 'android' ? StatusBar.currentHeight : 0
   },
 });
