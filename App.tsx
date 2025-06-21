@@ -2,7 +2,7 @@ import { StyleSheet, Text, StatusBar , Platform, SafeAreaView } from 'react-nati
 import { useEffect, useState } from 'react';
 import { getToken, refreshToken } from "./src/services/account-services";
 
-import HomeScreen from './src/screens/HomeScreen/HomeScreen';
+import AppNavigator from './src/navigation/AppNavigator';
 
 export default function App() {
   const [ msg, setMsg ] = useState("");
@@ -30,7 +30,7 @@ export default function App() {
 
   return (
     <SafeAreaView style={styles.container}>
-      <HomeScreen />
+      <AppNavigator />
     </SafeAreaView>
   );
 }
