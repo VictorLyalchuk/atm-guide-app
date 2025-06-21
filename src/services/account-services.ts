@@ -47,6 +47,7 @@ export async function login(_user: ILogin) {
         const res = await instance.post(`Login`, _user);
         const { token } = res.data;
         await setToken(token);
+        return token;
     } catch (error) {
         if (axios.isAxiosError(error)) {
             console.error('Login request failed:', error.response?.data?.message || error.message);
