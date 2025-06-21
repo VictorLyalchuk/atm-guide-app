@@ -6,19 +6,29 @@ import Loading from '../../components/Loading';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../../navigation/types';
 import { loginValidationSchema } from '../../validation/auth';
+import { login } from '../../services/account-services';
+import { ILogin } from '../../types/auth';
+import ErrorMessage from '../LoginScreen/ErrorMessage';
+import { Snackbar } from 'react-native-paper';
 
 export default function LoginScreen() {
   const [isLoading, setIsLoading] = useState(false);
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
+  const [errorMessage, setErrorMessage] = useState('');
+  const [snackbarVisible, setSnackbarVisible] = useState(false);
 
-  const handleLogin = async (values: { login: string; password: string }) => {
+  const handleLogin = async (values: ILogin) => {
     setIsLoading(true);
     try {
-      // Імітація запиту на сервер
-      await new Promise((resolve) => setTimeout(resolve, 1500));
+      await login(values);
       navigation.replace('Home');
-    } catch (error) {
-      alert('Сталася помилка');
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        setErrorMessage(error.message);
+      } else {
+        setErrorMessage('Сталася помилка');
+      }
+      setSnackbarVisible(true);
     } finally {
       setIsLoading(false);
     }
@@ -37,29 +47,30 @@ export default function LoginScreen() {
         </View>
         <View style={styles.separator} />
 
-        <TouchableOpacity style={styles.enterSystemButton}>
+        {/* <TouchableOpacity style={styles.enterSystemButton}>
           <Text style={styles.enterSystemButtonText}>Вхід до системи</Text>
-        </TouchableOpacity>
+        </TouchableOpacity> */}
+        <Text>{errorMessage && <ErrorMessage message={errorMessage} />}</Text>
 
         <Formik
-          initialValues={{ login: '', password: '' }}
+          initialValues={{ email: '', password: '', authType: 'mobile' }}
           validationSchema={loginValidationSchema}
-          onSubmit={handleLogin}
+          onSubmit={(values) => { handleLogin(values); }}
         >
+
           {({ handleChange, handleBlur, handleSubmit, values, errors, touched }) => (
             <>
+
               <View style={styles.inputGroup}>
                 <Text style={styles.label}>Логін</Text>
                 <TextInput
                   style={styles.input}
-                  onChangeText={handleChange('login')}
-                  onBlur={handleBlur('login')}
-                  value={values.login}
+                  onChangeText={handleChange('email')}
+                  onBlur={handleBlur('email')}
+                  value={values.email}
                   placeholder="Введіть логін"
                 />
-                {touched.login && errors.login && (
-                  <Text style={styles.errorText}>{errors.login}</Text>
-                )}
+                <ErrorMessage message={touched.email ? errors.email : null} />
               </View>
 
               <View style={styles.inputGroup}>
@@ -72,18 +83,19 @@ export default function LoginScreen() {
                   placeholder="Введіть пароль"
                   secureTextEntry
                 />
-                {touched.password && errors.password && (
-                  <Text style={styles.errorText}>{errors.password}</Text>
-                )}
+                <ErrorMessage message={touched.password ? errors.password : null} />
               </View>
-
+              <TouchableOpacity style={styles.enterSystemButton} onPress={() => { handleSubmit() }}>
+                <Text style={styles.enterSystemButtonText}>Вхід до системи</Text>
+              </TouchableOpacity>
               <TouchableOpacity onPress={() => alert('Функціонал у розробці')}>
                 <Text style={styles.forgotPasswordText}>Забули пароль?</Text>
               </TouchableOpacity>
 
-              <TouchableOpacity style={styles.loginButton} onPress={handleSubmit as any}>
+              {/* <TouchableOpacity style={styles.loginButton} onPress={() => {handleSubmit()}}>
                 <Text style={styles.loginButtonText}>Вхід</Text>
-              </TouchableOpacity>
+
+              </TouchableOpacity> */}
             </>
           )}
         </Formik>
@@ -91,6 +103,20 @@ export default function LoginScreen() {
         <TouchableOpacity style={styles.exitButton}>
           <Text style={styles.exitButtonText}>Вихід</Text>
         </TouchableOpacity>
+
+        <Snackbar
+          visible={snackbarVisible}
+          onDismiss={() => setSnackbarVisible(false)}
+          duration={3000}
+          action={{
+            label: 'Закрити',
+            onPress: () => setSnackbarVisible(false),
+          }}
+          style={{ backgroundColor: '#d32f2f' }}
+        >
+          <Text>{errorMessage}</Text>
+        </Snackbar>
+
       </View>
     </View>
   );
