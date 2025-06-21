@@ -1,11 +1,12 @@
-import { StyleSheet, Text, StatusBar , Platform, SafeAreaView } from 'react-native';
+import { StyleSheet, Text, StatusBar, Platform, SafeAreaView } from 'react-native';
 import { useEffect, useState } from 'react';
 import { getToken, refreshToken } from "./src/services/account-services";
 
 import AppNavigator from './src/navigation/AppNavigator';
+import { PaperProvider } from 'react-native-paper';
 
 export default function App() {
-  const [ msg, setMsg ] = useState("");
+  const [msg, setMsg] = useState("");
 
   useEffect(() => {
     const checkToken = async () => {
@@ -29,9 +30,13 @@ export default function App() {
   }, []);
 
   return (
-    <SafeAreaView style={styles.container}>
-      <AppNavigator />
-    </SafeAreaView>
+    <PaperProvider>
+
+      <SafeAreaView style={styles.container}>
+        <AppNavigator />
+      </SafeAreaView>
+    </PaperProvider>
+
   );
 }
 

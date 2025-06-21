@@ -6,7 +6,7 @@ import { APP_ENV } from "../env/config";
 const apiUrl = APP_ENV.API_URL;
 
 const instance = axios.create({
-    baseURL: `${apiUrl}/api/AccountControllers`,
+    baseURL: `${apiUrl}/api/Account`,
     headers: {
         "Content-Type": "application/json"
     }
@@ -36,9 +36,37 @@ export async function refreshToken() {
             setToken(response.data);
             return token;
         }
+
     } catch (error) {
-        console.error("Failed to refresh token:", error);
-        throw error;
+        if (axios.isAxiosError(error)) {
+            const serverMessage = error.response?.data?.message;
+            let userMessage = 'Сталася помилка';
+
+            if (!error.response) {
+                userMessage = 'Помилка мережі. Перевірте підключення до Інтернету.';
+            } else {
+                switch (error.response.status) {
+                    case 400:
+                        userMessage = serverMessage || 'Неправильний запит.';
+                        break;
+                    case 401:
+                        userMessage = serverMessage || "Невірний логін або пароль.";
+                        break;
+                    case 500:
+                        userMessage = 'Внутрішня помилка сервера.';
+                        break;
+                    default:
+                        userMessage = serverMessage || `Помилка сервера: ${error.response.status}`;
+                }
+            }
+            // Логування для дебагу
+            // console.error('Failed to refresh token:', userMessage);
+            // Проброс локалізованої помилки
+            throw new Error(userMessage);
+        } else {
+            // console.error('Unexpected error:', error);
+            throw new Error('Сталася непередбачена помилка');
+        }
     }
 }
 
@@ -50,10 +78,33 @@ export async function login(_user: ILogin) {
         return token;
     } catch (error) {
         if (axios.isAxiosError(error)) {
-            console.error('Login request failed:', error.response?.data?.message || error.message);
+            const serverMessage = error.response?.data?.message;
+            let userMessage = 'Сталася помилка';
+
+            if (!error.response) {
+                userMessage = 'Помилка мережі. Перевірте підключення до Інтернету.';
+            } else {
+                switch (error.response.status) {
+                    case 400:
+                        userMessage = serverMessage || 'Неправильний запит.';
+                        break;
+                    case 401:
+                        userMessage = serverMessage || "Невірний логін або пароль.";
+                        break;
+                    case 500:
+                        userMessage = 'Внутрішня помилка сервера.';
+                        break;
+                    default:
+                        userMessage = serverMessage || `Помилка сервера: ${error.response.status}`;
+                }
+            }
+            // Логування для дебагу
+            // console.error('Login request failed:', userMessage);
+            // Проброс локалізованої помилки
+            throw new Error(userMessage);
         } else {
-            console.error('Unexpected error:', error);
+            // console.error('Unexpected error:', error);
+            throw new Error('Сталася непередбачена помилка');
         }
-        throw error;
     }
 }
