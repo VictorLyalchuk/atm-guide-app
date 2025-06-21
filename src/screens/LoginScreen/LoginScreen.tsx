@@ -50,7 +50,7 @@ export default function LoginScreen() {
         {/* <TouchableOpacity style={styles.enterSystemButton}>
           <Text style={styles.enterSystemButtonText}>Вхід до системи</Text>
         </TouchableOpacity> */}
-        {errorMessage && <ErrorMessage message={errorMessage} />}
+        <Text>{errorMessage && <ErrorMessage message={errorMessage} />}</Text>
 
         <Formik
           initialValues={{ email: '', password: '', authType: 'mobile' }}
@@ -114,7 +114,7 @@ export default function LoginScreen() {
           }}
           style={{ backgroundColor: '#d32f2f' }}
         >
-          {errorMessage}
+          <Text>{errorMessage}</Text>
         </Snackbar>
 
       </View>
